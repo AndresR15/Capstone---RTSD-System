@@ -8,15 +8,15 @@ import math
 
 from keras.models import Sequential, Model
 from keras.layers.core import Dense, Activation
-from keras.layers import LSTM, Input, Flatten, Merge
+from keras.layers import LSTM, Input, Flatten #, Merge
 from keras.layers.wrappers import TimeDistributed
 from keras.optimizers import SGD, Adam, RMSprop
 from keras.layers.normalization import BatchNormalization
 from sklearn.preprocessing import label_binarize
 
 
-from features import *
-from helper import *
+from Code.Misc.helper import *
+from Code.Misc.features import *
 
 """
 Code taken from IEMOCAP-Emotion-Detection by Samarth-Tripathi
@@ -130,15 +130,16 @@ def read_iemocap_mocap():
             wav = get_audio(path_to_wav, f + '.wav')
             transcriptions = get_transcriptions(path_to_transcriptions, f + '.txt')
             emotions = get_emotions(path_to_emotions, f + '.txt')
-            sample = split_wav(wav, emotions)
+            sample, wav_meta = split_wav(wav, emotions)
 
             for ie, e in enumerate(emotions):
                 '''if 'F' in e['id']:
                     e['signal'] = sample[ie]['left']
                 else:
                     e['signal'] = sample[ie]['right']'''
-                
+
                 e['signal'] = sample[ie]['left']
+                e['wav_meta'] = wav_meta
                 e.pop("left", None)
                 e.pop("right", None)
                 e['transcription'] = transcriptions[e['id']]
@@ -157,6 +158,6 @@ def read_iemocap_mocap():
 data = read_iemocap_mocap()
 
 import pickle
-with open(data_path + '/../'+'data_collected.pickle', 'wb') as handle:
+with open(data_path + '/../'+'data_collected_sample.pickle', 'wb') as handle:
     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 

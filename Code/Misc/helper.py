@@ -45,6 +45,13 @@ def split_wav(wav, emotions):
     left = samples[0::nchannels]
     right = samples[1::nchannels]
 
+    wav_meta = {"nchannels": nchannels,
+                "sampwidth": sampwidth,
+                "framerate": framerate,
+                "nframes": nframes,
+                "comptype": comptype,
+                "compname": compname}
+
     frames = []
     for ie, e in enumerate(emotions):
         start = e['start']
@@ -54,7 +61,7 @@ def split_wav(wav, emotions):
         e['left'] = left[int(start * framerate):int(end * framerate)]
 
         frames.append({'left': e['left'], 'right': e['right']})
-    return frames
+    return frames, wav_meta
 
 def split_wav_time(wav, timeq = 2, overlap = 0):
     # split wav into n samples, where each sample is of length time
