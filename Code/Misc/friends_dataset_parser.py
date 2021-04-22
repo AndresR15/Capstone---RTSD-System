@@ -30,7 +30,7 @@ def extract_audio(data_path, output_audio_path):
                 print("skipping " + str(file))
                 print("skipped total = " + str(skipped))
 
-def extract_features(csv_file_path, output_audio_path, limit=1000):
+def extract_features(csv_file_path, output_audio_path, limit=1000, min_clip_length = 1):
 
     label_df = pd.read_csv(csv_file_path)
     wav_in = []
@@ -47,6 +47,13 @@ def extract_features(csv_file_path, output_audio_path, limit=1000):
 
             wav = get_audio(output_audio_path, audio_path)
             (nchannels, sampwidth, framerate, nframes, comptype, compname), samples_wav = wav
+
+            wav_length_sec = nframes / framerate
+            if wav_length_sec < min_clip_length:
+                skipped += 1
+                print("\t" + audio_path + " length = " + str(wav_length_sec) + " | skipping because too short")
+                print("skipped total = " + str(skipped))
+                continue
 
             st_features = calculate_features(samples_wav[0::nchannels], framerate)
             st_features, _ = pad_sequence_into_array(st_features, maxlen=100)
@@ -93,5 +100,5 @@ def calculate_features(frames, freq):
 
 csv_path = 'F:\Capstone Project\Capstone---RTSD-System\Data\MELD.Raw/train_sent_emo.csv'
 audio_path = 'F:\Capstone Project\Capstone---RTSD-System\Data\MELD.Raw/audio/'
-output_features, labels, transcription = extract_features(csv_path, audio_path)
+output_features, labels, transcription = extract_features(csv_path, audio_path, limit = 10000)
 np.save(audio_path + "../train_features", ([output_features], labels, transcription), allow_pickle=True)
