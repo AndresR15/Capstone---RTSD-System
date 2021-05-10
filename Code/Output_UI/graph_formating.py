@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 
 def plot_line_graph(graph, data):
@@ -59,7 +60,7 @@ def plot_text(text_array, polarity):
                                                   alpha=0.5))
         word_index += text_size
 
-    #plt.text(0.1, 0.5, text_total, bbox=dict(facecolor='red', alpha=0.5))
+    plt.text(word_index + 1, 0.5, str(polarity), bbox=dict(facecolor=colour, alpha=0.5))
 
     plt.xlim([0, word_index])
 
